@@ -1,7 +1,5 @@
 import streamlit as st
-from jinja2 import Environment, FileSystemLoader
-from xhtml2pdf import pisa
-from io import BytesIO
+from fpdf import FPDF
 from datetime import datetime
 
 st.set_page_config(page_title="K&G Beauty - Notas", page_icon="🌸", layout="centered")
@@ -22,6 +20,123 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+def crear_pdf_estetico(numero, cliente, celular, fecha, productos, total):
+    pdf = FPDF(orientation="P", unit="mm", format="Letter")
+    pdf.add_page()
+    pdf.set_auto_page_break(auto=True, margin=15)
+
+    # Fondo suave y tarjeta principal blanca con borde rosa
+    pdf.set_fill_color(255, 251, 252)
+    pdf.rect(0, 0, 216, 279, "F")
+    
+    pdf.set_fill_color(255, 255, 255)
+    pdf.set_draw_color(243, 213, 220)
+    pdf.set_line_width(0.6)
+    pdf.rounded_rect(12, 12, 192, 255, 6, "DF")
+
+    # Encabezado Marca
+    pdf.set_xy(20, 22)
+    pdf.set_font("Times", "B", 26)
+    pdf.set_text_color(136, 60, 82)
+    pdf.cell(100, 10, "K & G", ln=True)
+
+    pdf.set_x(20)
+    pdf.set_font("Helvetica", "", 8)
+    pdf.set_text_color(197, 139, 153)
+    pdf.cell(100, 5, "SKINCARE & BEAUTY BOUTIQUE", ln=False)
+
+    # Insignia N° de Nota
+    pdf.set_xy(135, 23)
+    pdf.set_fill_color(253, 242, 245)
+    pdf.set_draw_color(241, 203, 213)
+    pdf.set_font("Helvetica", "B", 10)
+    pdf.set_text_color(158, 71, 96)
+    pdf.rounded_rect(135, 22, 60, 11, 5, "DF")
+    pdf.cell(60, 9, f"Nota de Venta Nro. {numero}", align="C")
+
+    # Línea divisoria
+    pdf.set_draw_color(248, 228, 233)
+    pdf.line(20, 42, 196, 42)
+
+    # Caja de Datos Clienta
+    pdf.set_fill_color(253, 248, 249)
+    pdf.set_draw_color(247, 230, 234)
+    pdf.rounded_rect(20, 48, 176, 22, 4, "DF")
+
+    pdf.set_xy(25, 52)
+    pdf.set_font("Helvetica", "B", 10)
+    pdf.set_text_color(136, 60, 82)
+    pdf.cell(18, 6, "Clienta:", ln=False)
+    pdf.set_font("Helvetica", "", 10)
+    pdf.set_text_color(92, 67, 74)
+    pdf.cell(85, 6, cliente, ln=False)
+
+    pdf.set_font("Helvetica", "B", 10)
+    pdf.set_text_color(136, 60, 82)
+    pdf.cell(15, 6, "Fecha:", ln=False)
+    pdf.set_font("Helvetica", "", 10)
+    pdf.set_text_color(92, 67, 74)
+    pdf.cell(45, 6, fecha, align="R", ln=True)
+
+    pdf.set_x(25)
+    pdf.set_font("Helvetica", "B", 10)
+    pdf.set_text_color(136, 60, 82)
+    pdf.cell(18, 6, "Celular:", ln=False)
+    pdf.set_font("Helvetica", "", 10)
+    pdf.set_text_color(92, 67, 74)
+    pdf.cell(85, 6, celular, ln=False)
+
+    pdf.set_font("Helvetica", "B", 10)
+    pdf.set_text_color(136, 60, 82)
+    pdf.cell(15, 6, "Lugar:", ln=False)
+    pdf.set_font("Helvetica", "", 10)
+    pdf.set_text_color(92, 67, 74)
+    pdf.cell(45, 6, "La Paz, Bolivia", align="R", ln=True)
+
+    # Cabecera Tabla
+    pdf.set_xy(20, 78)
+    pdf.set_fill_color(249, 235, 239)
+    pdf.set_text_color(136, 60, 82)
+    pdf.set_font("Helvetica", "B", 9)
+    pdf.cell(18, 10, "CANT.", fill=True, align="C")
+    pdf.cell(98, 10, "PRODUCTO / TRATAMIENTO", fill=True, align="L")
+    pdf.cell(30, 10, "P. UNIT.", fill=True, align="R")
+    pdf.cell(30, 10, "SUBTOTAL", fill=True, align="R", ln=True)
+
+    # Filas de Productos
+    pdf.set_font("Helvetica", "", 10)
+    for item in productos:
+        pdf.set_x(20)
+        pdf.set_text_color(74, 53, 59)
+        pdf.cell(18, 10, str(item["cant"]), border="B", align="C")
+        pdf.cell(98, 10, item["desc"][:48], border="B", align="L")
+        pdf.cell(30, 10, f"Bs. {item['precio']}", border="B", align="R")
+        pdf.set_font("Helvetica", "B", 10)
+        pdf.set_text_color(136, 60, 82)
+        pdf.cell(30, 10, f"Bs. {item['subtotal']}", border="B", align="R", ln=True)
+        pdf.set_font("Helvetica", "", 10)
+
+    # Caja Total
+    pdf.ln(10)
+    pdf.set_x(126)
+    pdf.set_fill_color(158, 71, 96)
+    pdf.set_text_color(255, 255, 255)
+    pdf.set_font("Helvetica", "B", 12)
+    pdf.rounded_rect(126, pdf.get_y(), 70, 12, 4, "F")
+    pdf.cell(70, 12, f"TOTAL: Bs. {total}", align="C", ln=True)
+
+    # Pie de página
+    pdf.set_y(242)
+    pdf.set_font("Times", "I", 12)
+    pdf.set_text_color(158, 71, 96)
+    pdf.cell(0, 6, "Gracias por confiar el cuidado de tu piel en nosotros", align="C", ln=True)
+    pdf.set_font("Helvetica", "", 8)
+    pdf.set_text_color(176, 137, 147)
+    pdf.cell(0, 5, "K&G BEAUTY  •  PRODUCTOS ORIGINALES", align="C")
+
+    return bytes(pdf.output())
+
+# --- INTERFAZ WEB ---
 st.title("✨ K&G Skincare & Beauty ✨")
 st.caption("Generador de Notas de Venta")
 
@@ -71,9 +186,7 @@ if st.session_state.productos:
 
     st.markdown(f"#### Total a Pagar: **Bs. {total:.2f}**")
 
-    env = Environment(loader=FileSystemLoader("."))
-    template = env.get_template("plantilla.html")
-    html_renderizado = template.render(
+    pdf_bytes = crear_pdf_estetico(
         numero=numero or "001",
         cliente=cliente or "Clienta Especial",
         celular=celular or "Sin registrar",
@@ -81,11 +194,6 @@ if st.session_state.productos:
         productos=st.session_state.productos,
         total=f"{total:.2f}"
     )
-
-    # Generar PDF con xhtml2pdf
-    pdf_buffer = BytesIO()
-    pisa.CreatePDF(html_renderizado, dest=pdf_buffer)
-    pdf_bytes = pdf_buffer.getvalue()
 
     st.download_button(
         label="📄 Descargar Nota de Venta PDF",
