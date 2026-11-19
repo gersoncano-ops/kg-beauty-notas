@@ -20,6 +20,9 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+def limpiar_texto(texto):
+    return str(texto).encode("latin-1", "replace").decode("latin-1")
+
 def crear_pdf_estetico(numero, cliente, celular, fecha, productos, total):
     pdf = FPDF(orientation="P", unit="mm", format="Letter")
     pdf.add_page()
@@ -27,32 +30,32 @@ def crear_pdf_estetico(numero, cliente, celular, fecha, productos, total):
 
     # Fondo suave y tarjeta principal blanca con borde rosa
     pdf.set_fill_color(255, 251, 252)
-    pdf.rect(0, 0, 216, 279, "F")
+    pdf.rect(0, 0, 216, 279, style="F")
     
     pdf.set_fill_color(255, 255, 255)
     pdf.set_draw_color(243, 213, 220)
     pdf.set_line_width(0.6)
-    pdf.rounded_rect(12, 12, 192, 255, 6, "DF")
+    pdf.rect(12, 12, 192, 255, style="DF", round_corners=True, corner_radius=6)
 
     # Encabezado Marca
     pdf.set_xy(20, 22)
     pdf.set_font("Times", "B", 26)
     pdf.set_text_color(136, 60, 82)
-    pdf.cell(100, 10, "K & G", ln=True)
+    pdf.cell(100, 10, "K & G", new_x="LMARGIN", new_y="NEXT")
 
     pdf.set_x(20)
     pdf.set_font("Helvetica", "", 8)
     pdf.set_text_color(197, 139, 153)
-    pdf.cell(100, 5, "SKINCARE & BEAUTY BOUTIQUE", ln=False)
+    pdf.cell(100, 5, "SKINCARE & BEAUTY BOUTIQUE")
 
     # Insignia N° de Nota
-    pdf.set_xy(135, 23)
     pdf.set_fill_color(253, 242, 245)
     pdf.set_draw_color(241, 203, 213)
+    pdf.rect(135, 22, 60, 11, style="DF", round_corners=True, corner_radius=5)
+    pdf.set_xy(135, 23)
     pdf.set_font("Helvetica", "B", 10)
     pdf.set_text_color(158, 71, 96)
-    pdf.rounded_rect(135, 22, 60, 11, 5, "DF")
-    pdf.cell(60, 9, f"Nota de Venta Nro. {numero}", align="C")
+    pdf.cell(60, 9, limpiar_texto(f"Nota de Venta Nro. {numero}"), align="C")
 
     # Línea divisoria
     pdf.set_draw_color(248, 228, 233)
@@ -61,37 +64,37 @@ def crear_pdf_estetico(numero, cliente, celular, fecha, productos, total):
     # Caja de Datos Clienta
     pdf.set_fill_color(253, 248, 249)
     pdf.set_draw_color(247, 230, 234)
-    pdf.rounded_rect(20, 48, 176, 22, 4, "DF")
+    pdf.rect(20, 48, 176, 22, style="DF", round_corners=True, corner_radius=4)
 
     pdf.set_xy(25, 52)
     pdf.set_font("Helvetica", "B", 10)
     pdf.set_text_color(136, 60, 82)
-    pdf.cell(18, 6, "Clienta:", ln=False)
+    pdf.cell(18, 6, "Clienta:")
     pdf.set_font("Helvetica", "", 10)
     pdf.set_text_color(92, 67, 74)
-    pdf.cell(85, 6, cliente, ln=False)
+    pdf.cell(85, 6, limpiar_texto(cliente))
 
     pdf.set_font("Helvetica", "B", 10)
     pdf.set_text_color(136, 60, 82)
-    pdf.cell(15, 6, "Fecha:", ln=False)
+    pdf.cell(15, 6, "Fecha:")
     pdf.set_font("Helvetica", "", 10)
     pdf.set_text_color(92, 67, 74)
-    pdf.cell(45, 6, fecha, align="R", ln=True)
+    pdf.cell(45, 6, limpiar_texto(fecha), align="R", new_x="LMARGIN", new_y="NEXT")
 
     pdf.set_x(25)
     pdf.set_font("Helvetica", "B", 10)
     pdf.set_text_color(136, 60, 82)
-    pdf.cell(18, 6, "Celular:", ln=False)
+    pdf.cell(18, 6, "Celular:")
     pdf.set_font("Helvetica", "", 10)
     pdf.set_text_color(92, 67, 74)
-    pdf.cell(85, 6, celular, ln=False)
+    pdf.cell(85, 6, limpiar_texto(celular))
 
     pdf.set_font("Helvetica", "B", 10)
     pdf.set_text_color(136, 60, 82)
-    pdf.cell(15, 6, "Lugar:", ln=False)
+    pdf.cell(15, 6, "Lugar:")
     pdf.set_font("Helvetica", "", 10)
     pdf.set_text_color(92, 67, 74)
-    pdf.cell(45, 6, "La Paz, Bolivia", align="R", ln=True)
+    pdf.cell(45, 6, "La Paz, Bolivia", align="R", new_x="LMARGIN", new_y="NEXT")
 
     # Cabecera Tabla
     pdf.set_xy(20, 78)
@@ -101,7 +104,7 @@ def crear_pdf_estetico(numero, cliente, celular, fecha, productos, total):
     pdf.cell(18, 10, "CANT.", fill=True, align="C")
     pdf.cell(98, 10, "PRODUCTO / TRATAMIENTO", fill=True, align="L")
     pdf.cell(30, 10, "P. UNIT.", fill=True, align="R")
-    pdf.cell(30, 10, "SUBTOTAL", fill=True, align="R", ln=True)
+    pdf.cell(30, 10, "SUBTOTAL", fill=True, align="R", new_x="LMARGIN", new_y="NEXT")
 
     # Filas de Productos
     pdf.set_font("Helvetica", "", 10)
@@ -109,30 +112,31 @@ def crear_pdf_estetico(numero, cliente, celular, fecha, productos, total):
         pdf.set_x(20)
         pdf.set_text_color(74, 53, 59)
         pdf.cell(18, 10, str(item["cant"]), border="B", align="C")
-        pdf.cell(98, 10, item["desc"][:48], border="B", align="L")
+        pdf.cell(98, 10, limpiar_texto(item["desc"][:48]), border="B", align="L")
         pdf.cell(30, 10, f"Bs. {item['precio']}", border="B", align="R")
         pdf.set_font("Helvetica", "B", 10)
         pdf.set_text_color(136, 60, 82)
-        pdf.cell(30, 10, f"Bs. {item['subtotal']}", border="B", align="R", ln=True)
+        pdf.cell(30, 10, f"Bs. {item['subtotal']}", border="B", align="R", new_x="LMARGIN", new_y="NEXT")
         pdf.set_font("Helvetica", "", 10)
 
     # Caja Total
     pdf.ln(10)
-    pdf.set_x(126)
+    y_total = pdf.get_y()
     pdf.set_fill_color(158, 71, 96)
+    pdf.rect(126, y_total, 70, 12, style="F", round_corners=True, corner_radius=4)
+    pdf.set_xy(126, y_total)
     pdf.set_text_color(255, 255, 255)
     pdf.set_font("Helvetica", "B", 12)
-    pdf.rounded_rect(126, pdf.get_y(), 70, 12, 4, "F")
-    pdf.cell(70, 12, f"TOTAL: Bs. {total}", align="C", ln=True)
+    pdf.cell(70, 12, f"TOTAL: Bs. {total}", align="C", new_x="LMARGIN", new_y="NEXT")
 
     # Pie de página
     pdf.set_y(242)
     pdf.set_font("Times", "I", 12)
     pdf.set_text_color(158, 71, 96)
-    pdf.cell(0, 6, "Gracias por confiar el cuidado de tu piel en nosotros", align="C", ln=True)
+    pdf.cell(0, 6, "Gracias por confiar el cuidado de tu piel en nosotros", align="C", new_x="LMARGIN", new_y="NEXT")
     pdf.set_font("Helvetica", "", 8)
     pdf.set_text_color(176, 137, 147)
-    pdf.cell(0, 5, "K&G BEAUTY  •  PRODUCTOS ORIGINALES", align="C")
+    pdf.cell(0, 5, "K&G BEAUTY  -  PRODUCTOS ORIGINALES", align="C")
 
     return bytes(pdf.output())
 
