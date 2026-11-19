@@ -1,11 +1,11 @@
 import streamlit as st
 from jinja2 import Environment, FileSystemLoader
-from weasyprint import HTML
+from xhtml2pdf import pisa
+from io import BytesIO
 from datetime import datetime
 
 st.set_page_config(page_title="K&G Beauty - Notas", page_icon="🌸", layout="centered")
 
-# Estilo visual femenino para la app en el celular
 st.markdown("""
     <style>
     .stApp { background-color: #fff5f7; }
@@ -28,7 +28,6 @@ st.caption("Generador de Notas de Venta")
 if "productos" not in st.session_state:
     st.session_state.productos = []
 
-# --- Datos de la Clienta ---
 with st.container(border=True):
     col1, col2 = st.columns(2)
     with col1:
@@ -37,7 +36,6 @@ with st.container(border=True):
         celular = st.text_input("N° de Celular", placeholder="Ej. 70012345")
     cliente = st.text_input("Nombre de la Clienta", placeholder="Ej. María Pérez")
 
-# --- Agregar Productos ---
 with st.container(border=True):
     st.subheader("🌸 Agregar Producto")
     c1, c2 = st.columns([1, 2])
@@ -60,7 +58,6 @@ with st.container(border=True):
         else:
             st.warning("Escribe el nombre del producto.")
 
-# --- Lista de productos agregados ---
 if st.session_state.productos:
     st.markdown("### 🛍️ Resumen de la Nota")
     total = 0.0
@@ -74,7 +71,6 @@ if st.session_state.productos:
 
     st.markdown(f"#### Total a Pagar: **Bs. {total:.2f}**")
 
-    # Generar PDF en memoria
     env = Environment(loader=FileSystemLoader("."))
     template = env.get_template("plantilla.html")
     html_renderizado = template.render(
@@ -85,7 +81,11 @@ if st.session_state.productos:
         productos=st.session_state.productos,
         total=f"{total:.2f}"
     )
-    pdf_bytes = HTML(string=html_renderizado).write_pdf()
+
+    # Generar PDF con xhtml2pdf
+    pdf_buffer = BytesIO()
+    pisa.CreatePDF(html_renderizado, dest=pdf_buffer)
+    pdf_bytes = pdf_buffer.getvalue()
 
     st.download_button(
         label="📄 Descargar Nota de Venta PDF",
