@@ -2,21 +2,58 @@ import streamlit as st
 from fpdf import FPDF
 from datetime import datetime
 
-st.set_page_config(page_title="Rouuse Beauty - Notas", page_icon="🌸", layout="centered")
+st.set_page_config(page_title="Rosse Beauty - Notas", page_icon="🌸", layout="centered")
 
+# CSS reforzado para que se vea perfecto tanto en PC (modo oscuro/claro) como en Celular
 st.markdown("""
     <style>
-    .stApp { background-color: #fff5f7; }
-    h1 { color: #883c52 !important; text-align: center; font-family: 'Georgia', serif; }
-    .stButton>button {
-        background-color: #9e4760;
-        color: white;
-        border-radius: 20px;
-        border: none;
-        width: 100%;
-        font-weight: bold;
+    .stApp {
+        background-color: #fff5f7 !important;
+        color: #5c2838 !important;
     }
-    .stButton>button:hover { background-color: #7d3348; color: white; }
+    h1 {
+        color: #883c52 !important;
+        text-align: center;
+        font-family: 'Georgia', serif;
+    }
+    h2, h3, h4, p, span, label, div[data-testid="stCaptionContainer"] {
+        color: #6e3143 !important;
+    }
+    /* Cajas contenedoras */
+    div[data-testid="stVerticalBlockBorderWrapper"] {
+        background-color: #ffffff !important;
+        border: 1.5px solid #f3d5dc !important;
+        border-radius: 16px !important;
+    }
+    /* Inputs de texto y números */
+    input {
+        background-color: #fff9fa !important;
+        color: #4a202d !important;
+        border: 1px solid #e8bcc7 !important;
+        border-radius: 10px !important;
+    }
+    div[data-baseweb="input"] {
+        background-color: #fff9fa !important;
+        border: 1px solid #e8bcc7 !important;
+        border-radius: 10px !important;
+    }
+    /* Botones principales y de descarga */
+    .stButton>button, .stDownloadButton>button {
+        background-color: #9e4760 !important;
+        color: #ffffff !important;
+        border-radius: 20px !important;
+        border: none !important;
+        width: 100%;
+        font-weight: bold !important;
+        padding: 10px 20px !important;
+    }
+    .stButton>button p, .stDownloadButton>button p {
+        color: #ffffff !important;
+    }
+    .stButton>button:hover, .stDownloadButton>button:hover {
+        background-color: #7d3348 !important;
+        color: #ffffff !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -37,11 +74,11 @@ def crear_pdf_estetico(numero, cliente, celular, fecha, productos, total):
     pdf.set_line_width(0.6)
     pdf.rect(12, 12, 192, 255, style="DF", round_corners=True, corner_radius=6)
 
-    # Encabezado Marca
+    # Encabezado Marca ROSSE
     pdf.set_xy(20, 22)
-    pdf.set_font("Times", "B", 26)
+    pdf.set_font("Times", "B", 28)
     pdf.set_text_color(136, 60, 82)
-    pdf.cell(100, 10, "K & G", new_x="LMARGIN", new_y="NEXT")
+    pdf.cell(100, 10, "ROSSE", new_x="LMARGIN", new_y="NEXT")
 
     pdf.set_x(20)
     pdf.set_font("Helvetica", "", 8)
@@ -136,12 +173,12 @@ def crear_pdf_estetico(numero, cliente, celular, fecha, productos, total):
     pdf.cell(0, 6, "Gracias por confiar el cuidado de tu piel en nosotros", align="C", new_x="LMARGIN", new_y="NEXT")
     pdf.set_font("Helvetica", "", 8)
     pdf.set_text_color(176, 137, 147)
-    pdf.cell(0, 5, "K&G BEAUTY  -  PRODUCTOS ORIGINALES", align="C")
+    pdf.cell(0, 5, "ROSSE BEAUTY  -  PRODUCTOS ORIGINALES", align="C")
 
     return bytes(pdf.output())
 
 # --- INTERFAZ WEB ---
-st.title("✨ K&G Skincare & Beauty ✨")
+st.title("✨ Rosse Skincare & Beauty ✨")
 st.caption("Generador de Notas de Venta")
 
 if "productos" not in st.session_state:
@@ -202,7 +239,7 @@ if st.session_state.productos:
     st.download_button(
         label="📄 Descargar Nota de Venta PDF",
         data=pdf_bytes,
-        file_name=f"Nota_KG_{numero or '001'}.pdf",
+        file_name=f"Nota_Rosse_{numero or '001'}.pdf",
         mime="application/pdf"
     )
 
