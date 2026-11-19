@@ -2,7 +2,7 @@ import streamlit as st
 from fpdf import FPDF
 from datetime import datetime
 
-st.set_page_config(page_title="K&G Beauty - Notas", page_icon="🌸", layout="centered")
+st.set_page_config(page_title="Rouuse Beauty - Notas", page_icon="🌸", layout="centered")
 
 st.markdown("""
     <style>
